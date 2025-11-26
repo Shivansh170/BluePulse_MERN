@@ -1,0 +1,11 @@
+#heading{
+    font-family: "Sour Gummy";
+    color:white;
+}
+.navbuttons{
+    font-weight:500;
+}
+.navbuttons :hover{
+    background-color: white;
+    color:black;
+}

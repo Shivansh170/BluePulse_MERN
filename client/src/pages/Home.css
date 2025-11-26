@@ -1,0 +1,39 @@
+.hero {
+    background: linear-gradient(45deg, #005c, #363795, #24C6DC);
+    width: 100%;
+    animation: of 8s infinite linear;
+    background-size: 300% 300%;
+}
+.card-flip {
+  transform-style: preserve-3d;
+  transition: transform 0.6s;
+}
+
+.card:hover .card-flip {
+  transform: rotateY(180deg);
+}
+
+.card-side {
+  backface-visibility: hidden;
+}
+@keyframes of {
+    0% {
+        background-position: 0 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    65% {
+        background-position: 100% 50%;
+    }
+
+    75% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0 50%;
+    }
+}
