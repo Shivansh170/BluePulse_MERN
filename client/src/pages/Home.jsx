@@ -12,7 +12,7 @@ export default function Home() {
         <section className="flex items-center justify-center h-[50vh] w-full mb-8 animate-fadeIn">
           <div className="w-[70%] text-center animate-gradientMove p-6 pb-0 rounded-xl hover:pb-8 hover:pr-3 transition-all">
             <h1 className="text-white text-4xl md:text-5xl font-playwrite">
-              "United for Delhi: Protect Water, Preserve Life, and Make a
+              "United for Water: Protect Water, Preserve Life, and Make a
               Difference"
             </h1>
           </div>
