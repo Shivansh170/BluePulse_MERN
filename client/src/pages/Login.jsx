@@ -7,9 +7,38 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, toggleShowPassword] = useState(false);
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
+
+    try {
+      const res = await fetch("http://localhost:3000/api/user/loginUser", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+      console.log(data);
+
+      if (!res.ok) {
+        alert(data.message || "Login failed");
+        return; // ⛔ stop here
+      }
+
+      // login successful
+      sessionStorage.setItem("accessToken", data.token);
+      sessionStorage.setItem("user", JSON.stringify(data.user));
+
+      if (data.user.role === "Admin") {
+        navigate("/admin");
+      } else {
+        navigate("/surveyor");
+      }
+    } catch (err) {
+      console.error("Login Error:", err);
+    }
   };
+
   return (
     <>
       <div className="bg-linear-to-tr from-[#005c] via-[#363795] to-[#24C6DC] w-full min-h-screen">

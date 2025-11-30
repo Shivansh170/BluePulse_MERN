@@ -1,21 +1,46 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Header from "./components/Header";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
+import AdminDashboard from "./pages/Admin";
+import AdminHero from "./components/Admin_index";
+import ManageSurveyors from "./components/Admin_Surveyors";
+import AdminAllSurveys from "./components/Admin_allSurveys";
 export default function App() {
+  let rawUser = sessionStorage.getItem("user");
+
+  let user = {};
+
+  try {
+    user = rawUser && rawUser !== "undefined" ? JSON.parse(rawUser) : {};
+  } catch {
+    user = {};
+  }
+
   return (
-    <>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />}>
-            
-          </Route>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+
+        <Route path="/admin" element={<AdminDashboard />}>
           <Route
-              path="/login"
-              element={<Login />}
-            />
-        </Routes>
-      </BrowserRouter>
-    </>
+            index
+            element={<AdminHero name={user ? user.name : "Admin"} />}
+          />
+          <Route path="surveyors" element={<ManageSurveyors />} />
+          <Route path="surveys" element={<AdminAllSurveys />} />
+        </Route>
+
+        <Route
+          path="/surveyor"
+          element={
+            <h1>
+              Hello, I am the surveyor dashboard and the current surveyor is{" "}
+              {user?.name}
+            </h1>
+          }
+        />
+      </Routes>
+    </BrowserRouter>
   );
 }

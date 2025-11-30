@@ -8,6 +8,7 @@ const adminRoutes = require("./routes/adminRoutes");
 const aiRoutes = require("./routes/predictionRoutes");
 dotenv.config();
 const app = express();
+app.use(cors());
 app.use(express.json());
 app.use("/api/user", userRoutes);
 app.use("/api/surveys", surveyRoutes);
