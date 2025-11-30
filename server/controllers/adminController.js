@@ -15,6 +15,61 @@ const fetchAllSurveyors = async (req, res) => {
     });
   }
 };
+const getWaterBodiesStatus = async (req, res) => {
+  try {
+    const surveys = await WaterQualitySurvey.find();
+    const waterBodyMap = {};
+
+    for (let s of surveys) {
+      if (
+        !waterBodyMap[s.location] ||
+        new Date(s.samplingDate) >
+          new Date(waterBodyMap[s.location].samplingDate)
+      ) {
+        waterBodyMap[s.location] = s;
+      }
+    }
+
+    const results = [];
+
+    for (let location in waterBodyMap) {
+      const survey = waterBodyMap[location];
+
+      const { ph, turbidity, temperature, dissolvedOxygen } = survey;
+      let score = 0;
+
+      if (ph >= 6.5 && ph <= 8.5) score++;
+      if (turbidity <= 5) score++;
+      if (temperature >= 18 && temperature <= 28) score++;
+      if (dissolvedOxygen >= 5) score++;
+
+      let status = "";
+      if (score === 4) status = "Good";
+      else if (score === 3) status = "Moderate";
+      else if (score === 2) status = "Poor";
+      else status = "Critical";
+
+      results.push({
+        location,
+        surveyId: survey._id,
+        sampledAt: survey.samplingDate,
+        score,
+        status,
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      count: results.length,
+      results,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 
 const fetchAllSurveys = async (req, res) => {
   try {
@@ -195,6 +250,41 @@ const adminStats = async (req, res) => {
     });
   }
 };
+const deleteSurveyor = async (req, res) => {
+  try {
+    const surveyorId = req.params.surveyorId;
+
+    const surveyor = await User.findById(surveyorId);
+
+    if (!surveyor) {
+      return res.status(404).json({
+        success: false,
+        message: "Surveyor not found",
+      });
+    }
+
+    if (surveyor.role !== "Surveyor") {
+      return res.status(400).json({
+        success: false,
+        message: "User is not a surveyor",
+      });
+    }
+
+    await WaterQualitySurvey.deleteMany({ user: surveyorId });
+
+    await User.findByIdAndDelete(surveyorId);
+
+    return res.status(200).json({
+      success: true,
+      message: "Surveyor and their surveys deleted successfully",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 
 module.exports = {
   fetchAllSurveyors,
@@ -205,4 +295,6 @@ module.exports = {
   verifySurvey,
   flagSurvey,
   adminStats,
+  getWaterBodiesStatus,
+  deleteSurveyor,
 };
