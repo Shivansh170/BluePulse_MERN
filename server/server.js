@@ -5,12 +5,14 @@ const connectDB = require("./config/db");
 const userRoutes = require("./routes/userRoutes");
 const surveyRoutes = require("./routes/surveyRoutes");
 const adminRoutes = require("./routes/adminRoutes");
+const aiRoutes = require("./routes/predictionRoutes");
 dotenv.config();
 const app = express();
 app.use(express.json());
 app.use("/api/user", userRoutes);
 app.use("/api/surveys", surveyRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/ai", aiRoutes);
 const startServer = async () => {
   try {
     await connectDB();
