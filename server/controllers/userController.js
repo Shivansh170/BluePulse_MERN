@@ -34,26 +34,26 @@ const userLogin = async (req, res) => {
     if (!user) {
       return res.status(500).json({
         success: false,
-        message: "No such user found...",
+        message: "No such user exists....",
       });
     }
-    isVerified = await bcryptjs.compare(password, user.password);
-    if (!isVerified) {
+    const isMatched = await bcryptjs.compare(password, user.password);
+    if (!isMatched) {
       return res.status(401).json({
-        success: "false",
-        message: "Invalid username or password...",
+        success: false,
+        message: "Invalid password...",
       });
     }
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY, {
-      expiresIn: "1h",
+      expiresIn: "20m",
     });
-    return res.status(200).json({
-      success: "true",
+    return res.status(201).json({
+      success: true,
       token,
     });
   } catch (error) {
     return res.status(500).json({
-      success: "false",
+      success: false,
       message: error.message,
     });
   }
