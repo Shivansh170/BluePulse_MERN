@@ -4,7 +4,7 @@ import { ArrowLeftFromLine } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 export default function Login() {
   const navigate = useNavigate();
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, toggleShowPassword] = useState(false);
   const handleLogin = (e) => {
@@ -31,12 +31,12 @@ export default function Login() {
             </h1>
 
             <input
-              type="text"
-              placeholder="Enter username"
+              type="email"
+              placeholder="Enter your email"
               className="w-full bg-blue-100 p-3 rounded-full outline-none focus:ring-2 focus:ring-[#005c] px-6"
-              value={username}
+              value={email}
               onChange={(e) => {
-                setUsername(e.target.value);
+                setEmail(e.target.value);
               }}
             />
 
