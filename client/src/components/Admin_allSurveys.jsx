@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function AdminAllSurveys() {
+  const navigate = useNavigate();
   const [surveys, setSurveys] = useState([]);
   const [search, setSearch] = useState("");
 
@@ -22,6 +24,23 @@ export default function AdminAllSurveys() {
     };
     fetchAllsurveys();
   }, []);
+  function getStatusBadgeClasses(status) {
+    const main = status.split(" ")[0]; // 'Pending' from 'Pending Verification'
+
+    switch (main) {
+      case "Pending":
+        return "bg-yellow-50 text-yellow-700 border border-yellow-200";
+
+      case "Verified":
+        return "bg-green-50 text-green-700 border border-green-200";
+
+      case "Flagged":
+        return "bg-red-50 text-red-700 border border-red-200";
+
+      default:
+        return "bg-gray-100 text-gray-600 border border-gray-300";
+    }
+  }
 
   return (
     <div className="bg-white shadow-xl rounded-2xl p-8">
@@ -55,7 +74,6 @@ export default function AdminAllSurveys() {
             </tr>
           </thead>
 
-          {/* Body */}
           <tbody>
             {surveys
               .filter((s) =>
@@ -78,32 +96,25 @@ export default function AdminAllSurveys() {
                 return (
                   <tr
                     key={s._id}
-                    className={`transition ${
+                    onClick={() => navigate(`/admin/surveys/${s._id}`)}
+                    className={`transition cursor-pointer ${
                       index % 2 === 0 ? "bg-white" : "bg-gray-50"
                     } hover:bg-[#24C6DC]/10`}
                   >
-                    {/* Location */}
                     <td className="p-4 font-medium text-[#005c]">
                       {s.location?.name}
                     </td>
 
-                    {/* Surveyor */}
                     <td className="p-4">
                       {user?.name}
                       <div className="text-sm text-gray-500">{user?.email}</div>
                     </td>
-
-                    {/* Survey Time */}
                     <td className="p-4">
                       {new Date(t.surveyorTime).toLocaleString()}
                     </td>
-
-                    {/* Measurements */}
                     <td className="p-4">{m.ph}</td>
                     <td className="p-4">{m.turbidity}</td>
                     <td className="p-4">{m.temperature}</td>
-
-                    {/* Auto Check */}
                     <td className="p-4">
                       <span
                         className={`px-2.5 py-0.5 text-xs rounded-full font-medium tracking-wide
@@ -117,10 +128,12 @@ export default function AdminAllSurveys() {
                         {autoFails ? "Issues" : "Valid"}
                       </span>
                     </td>
-
-                    {/* Admin Review Status */}
                     <td className="p-4">
-                      <span className="px-3 py-1 text-sm rounded-full font-semibold bg-yellow-100 text-yellow-800 border border-yellow-300">
+                      <span
+                        className={`px-2.5 py-0.5 text-xs rounded-full font-medium tracking-wide 
+    ${getStatusBadgeClasses(s.status)}
+  `}
+                      >
                         {s.status.split(" ")[0]}
                       </span>
                     </td>

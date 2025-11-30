@@ -8,8 +8,6 @@ export default function AdminDashboard() {
     { label: "Manage Surveyors", to: "/admin/surveyors" },
     { label: "All Surveys", to: "/admin/surveys" },
     { label: "Water Bodies Status", to: "/admin/water-bodies" },
-    { label: "Alerts & Warnings", to: "/admin/alerts" },
-    { label: "Settings", to: "/admin/settings" },
   ];
 
   return (
@@ -28,6 +26,16 @@ export default function AdminDashboard() {
               {item.label}
             </button>
           ))}
+          <button
+            className="bg-red-400/40 hover:bg-red-400/60 backdrop-blur-md py-2 px-4 rounded-lg transition text-left"
+            onClick={() => {
+              sessionStorage.clear("user");
+              sessionStorage.clear("token");
+              navigate("/");
+            }}
+          >
+            Logout
+          </button>
         </nav>
       </aside>
 

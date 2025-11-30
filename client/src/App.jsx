@@ -5,6 +5,8 @@ import AdminDashboard from "./pages/Admin";
 import AdminHero from "./components/Admin_index";
 import ManageSurveyors from "./components/Admin_Surveyors";
 import AdminAllSurveys from "./components/Admin_allSurveys";
+import AdminSingleSurvey from "./components/Admin_SingleSurvey";
+import WaterBodiesStatus from "./components/Admin_WaterBodiesStatus";
 export default function App() {
   let rawUser = sessionStorage.getItem("user");
 
@@ -29,6 +31,8 @@ export default function App() {
           />
           <Route path="surveyors" element={<ManageSurveyors />} />
           <Route path="surveys" element={<AdminAllSurveys />} />
+          <Route path="surveys/:surveyId" element={<AdminSingleSurvey />} />
+          <Route path="water-bodies" element={<WaterBodiesStatus />} />
         </Route>
 
         <Route
