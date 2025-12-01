@@ -1,20 +1,32 @@
 import { Outlet, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 
-export default function AdminDashboard() {
+export default function SurveyorDashboard() {
   const navigate = useNavigate();
+  const [name, setName] = useState("");
+
+  useEffect(() => {
+    const user = JSON.parse(sessionStorage.getItem("user"));
+    if (user) setName(user.name);
+  }, []);
 
   const menuItems = [
-    { label: "Dashboard Overview", to: "/admin" },
-    { label: "Manage Surveyors", to: "/admin/surveyors" },
-    { label: "All Surveys", to: "/admin/surveys" },
-    { label: "Water Bodies Status", to: "/admin/water-bodies" },
+    { label: "Dashboard", to: "/surveyor" },
+    { label: "My Surveys", to: "/surveyor/surveys" },
+    { label: "Submit Survey", to: "/surveyor/new-survey" },
   ];
+
+  const handleLogout = () => {
+    sessionStorage.removeItem("user");
+    sessionStorage.removeItem("accessToken");
+    window.location.href = "/";
+  };
 
   return (
     <div className="flex min-h-screen">
-      {/* Left Sidebar */}
+      {/* LEFT SIDEBAR */}
       <aside className="w-64 bg-linear-to-b from-[#005c] via-[#363795] to-[#24C6DC] text-white p-6 flex flex-col gap-6 shadow-2xl">
-        <h1 className="text-2xl font-bold tracking-wide">BluePulse Admin</h1>
+        <h1 className="text-2xl font-bold tracking-wide">Surveyor Panel</h1>
 
         <nav className="flex flex-col gap-4 text-lg font-medium">
           {menuItems.map((item) => (
@@ -26,24 +38,19 @@ export default function AdminDashboard() {
               {item.label}
             </button>
           ))}
-          <button
-            className="bg-red-400/40 hover:bg-red-400/60 backdrop-blur-md py-2 px-4 rounded-lg transition text-left"
-            onClick={() => {
-              sessionStorage.removeItem("user");
-              sessionStorage.removeItem("accessToken");
 
-              // Force page reset
-              window.location.href = "/";
-            }}
+          <button
+            onClick={handleLogout}
+            className="bg-red-400/40 hover:bg-red-400/60 backdrop-blur-md py-2 px-4 rounded-lg transition text-left"
           >
             Logout
           </button>
         </nav>
       </aside>
 
-      {/* Right Main Content */}
-      <main className="flex-1 bg-gray-50 p-10">
-        <Outlet />
+      {/* RIGHT CONTENT */}
+      <main className="flex-1 bg-gray-50 p-10 overflow-y-auto">
+        <Outlet context={{ name }} />
       </main>
     </div>
   );

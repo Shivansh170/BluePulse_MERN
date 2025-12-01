@@ -19,18 +19,13 @@ export default function AdminPredictPage() {
   const [waterBody, setWaterBody] = useState({});
   const [prediction, setPrediction] = useState(null);
 
-  // OPTIONAL: Surveys passed via navigate
   const passedSurveys = location.state?.surveys || null;
 
   useEffect(() => {
-    if (passedSurveys) {
-      processSurveys(passedSurveys);
-    } else {
-      fetchAllSurveys();
-    }
+    if (passedSurveys) processSurveys(passedSurveys);
+    else fetchAllSurveys();
   }, []);
 
-  // 👉 Fetch all surveys from existing route
   const fetchAllSurveys = async () => {
     try {
       const res = await fetch("http://localhost:3000/api/admin/surveys", {
@@ -53,7 +48,6 @@ export default function AdminPredictPage() {
   const processSurveys = async (bodySurveys) => {
     setSurveys(bodySurveys);
 
-    // Extract water body info from first survey
     setWaterBody({
       name: waterBodyName,
       city: bodySurveys[0]?.location?.city || "Unknown",
@@ -64,7 +58,6 @@ export default function AdminPredictPage() {
     setLoading(false);
   };
 
-  // 👉 RUN AI PREDICTION
   const runPrediction = async (bodySurveys) => {
     if (bodySurveys.length < 3) return;
 
@@ -82,7 +75,7 @@ export default function AdminPredictPage() {
 
     try {
       const res = await fetch(
-        "http://localhost:3000/api/admin/predict-water-quality",
+        "http://localhost:3000/api/ai/predict-water-quality",
         {
           method: "POST",
           headers: {
@@ -94,18 +87,19 @@ export default function AdminPredictPage() {
       );
 
       const data = await res.json();
-      if (data.success) {
-        setPrediction(data.data);
-      }
+      if (data.success) setPrediction(data.data);
     } catch (err) {
       console.error("Prediction error", err);
     }
   };
 
   if (loading)
-    return <p className="p-6 text-gray-600 text-lg">Loading prediction...</p>;
+    return (
+      <p className="p-6 text-gray-600 text-lg animate-pulse">
+        Loading prediction...
+      </p>
+    );
 
-  // GRAPH DATA
   const graphData = surveys.map((s) => ({
     name: new Date(s.timestamps?.serverReceivedTime).toLocaleDateString(),
     ph: s.measurements.ph,
@@ -115,75 +109,179 @@ export default function AdminPredictPage() {
   }));
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-12">
       {/* HEADER */}
-      <div className="bg-linear-to-r from-blue-500 to-purple-600 p-10 rounded-3xl shadow-xl text-white">
-        <h1 className="text-5xl font-bold">{waterBody.name}</h1>
-        <p className="text-lg mt-2 opacity-90">
-          AI-powered water quality prediction & insights
+      <div className="rounded-3xl p-10 shadow-xl bg-linear-to-r from-[#4A37FF] to-[#24C6DC] text-white">
+        <h1 className="text-5xl font-extrabold tracking-wide drop-shadow">
+          {waterBody.name}
+        </h1>
+        <p className="text-lg mt-3 opacity-90">
+          Advanced AI prediction & water quality analysis
         </p>
       </div>
 
-      {/* CHARTS */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <GraphCard title="pH Levels" data={graphData} dataKey="ph" />
-        <GraphCard title="Turbidity" data={graphData} dataKey="turbidity" />
-        <GraphCard title="Temperature" data={graphData} dataKey="temp" />
-        <GraphCard title="Dissolved Oxygen" data={graphData} dataKey="do" />
+      {/* METRICS */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <MetricCard label="Total Surveys" value={surveys.length} />
+        <MetricCard label="Avg pH" value={avg(surveys, "ph")} />
+        <MetricCard
+          label="Avg Temperature"
+          value={avg(surveys, "temperature") + "°C"}
+        />
+        <MetricCard label="Avg DO" value={avg(surveys, "dissolvedOxygen")} />
       </div>
 
-      {/* AI PREDICTION */}
-      <div className="bg-white p-6 rounded-2xl shadow-lg">
-        <h2 className="text-3xl font-bold text-gray-800">AI Forecast</h2>
+      {/* CHARTS */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <GraphCard
+          title="pH Levels"
+          data={graphData}
+          dataKey="ph"
+          color="#4A37FF"
+        />
+        <GraphCard
+          title="Turbidity"
+          data={graphData}
+          dataKey="turbidity"
+          color="#F97316"
+        />
+        <GraphCard
+          title="Temperature"
+          data={graphData}
+          dataKey="temp"
+          color="#DC2626"
+        />
+        <GraphCard
+          title="Dissolved Oxygen"
+          data={graphData}
+          dataKey="do"
+          color="#22C55E"
+        />
+      </div>
+
+      {/* PREDICTION SECTION */}
+      <div className="bg-white p-10 rounded-3xl shadow-2xl border border-gray-200 space-y-10">
+        {/* HEADER */}
+        <div className="flex items-center justify-between">
+          <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight">
+            AI Forecast
+          </h2>
+
+          {prediction && (
+            <span
+              className={`px-4 py-2 text-sm rounded-full font-semibold shadow text-white ${
+                prediction.risk_level === "High"
+                  ? "bg-red-500"
+                  : prediction.risk_level === "Moderate"
+                  ? "bg-yellow-500"
+                  : "bg-green-500"
+              }`}
+            >
+              Risk: {prediction.risk_level}
+            </span>
+          )}
+        </div>
 
         {prediction ? (
           <>
-            <p className="mt-4 text-xl">
-              <strong>Risk level:</strong>{" "}
-              <span className="text-red-500">{prediction.risk_level}</span>
-            </p>
-            <p className="text-gray-700 mt-2">{prediction.trend_summary}</p>
+            {/* AI SUMMARY */}
+            <div className="bg-linear-to-r from-[#4A37FF]/10 to-[#24C6DC]/10 p-6 rounded-2xl backdrop-blur-md border shadow-inner">
+              <h3 className="text-xl font-bold text-gray-800 mb-2">
+                AI Insight Summary
+              </h3>
+              <p className="text-gray-600 leading-relaxed text-md">
+                {prediction.trend_summary}
+              </p>
+            </div>
 
-            <h3 className="mt-8 text-xl font-semibold">7-Day Forecast</h3>
+            {/* NEXT 7 DAYS TITLE */}
+            <h3 className="text-2xl font-semibold text-gray-900 mt-6">
+              7-Day Trend Forecast
+            </h3>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-              {prediction["7_day_forecast"].map((d) => (
+            {/* FORECAST GRID */}
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-6 mt-4">
+              {prediction["7_day_forecast"].map((day) => (
                 <div
-                  key={d.day}
-                  className="bg-gray-100 p-4 rounded-xl shadow text-gray-700"
+                  key={day.day}
+                  className="bg-white border border-gray-200 p-5 rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-200"
                 >
-                  <p className="font-bold">Day {d.day}</p>
-                  <p>pH: {d.ph}</p>
-                  <p>Turbidity: {d.turbidity}</p>
-                  <p>Temp: {d.temperature}°C</p>
-                  <p>DO: {d.dissolvedOxygen}</p>
+                  <p className="font-bold text-lg text-gray-800 mb-2">
+                    Day {day.day}
+                  </p>
+
+                  <div className="space-y-1 text-sm text-gray-600">
+                    <p>
+                      <span className="font-semibold text-gray-800">pH:</span>{" "}
+                      {day.ph}
+                    </p>
+                    <p>
+                      <span className="font-semibold text-gray-800">
+                        Turbidity:
+                      </span>{" "}
+                      {day.turbidity}
+                    </p>
+                    <p>
+                      <span className="font-semibold text-gray-800">Temp:</span>{" "}
+                      {day.temperature}°C
+                    </p>
+                    <p>
+                      <span className="font-semibold text-gray-800">DO:</span>{" "}
+                      {day.dissolvedOxygen}
+                    </p>
+                  </div>
                 </div>
               ))}
             </div>
           </>
         ) : (
-          <p className="text-gray-500 mt-3">
-            Not enough surveys to generate prediction.
+          <p className="text-gray-500 text-lg mt-4">
+            Not enough surveys to generate a prediction.
           </p>
         )}
       </div>
     </div>
   );
 }
-function GraphCard({ title, data, dataKey }) {
+
+/* --- Metric Card --- */
+function MetricCard({ label, value }) {
   return (
-    <div className="bg-white p-6 rounded-2xl shadow-md">
+    <div className="bg-white/80 backdrop-blur p-6 rounded-2xl shadow-md border text-center hover:shadow-xl transition">
+      <p className="text-gray-600 text-sm">{label}</p>
+      <p className="text-3xl font-bold text-[#4A37FF] mt-2">{value}</p>
+    </div>
+  );
+}
+
+/* --- Graph Card --- */
+function GraphCard({ title, data, dataKey, color }) {
+  return (
+    <div className="bg-white p-6 rounded-3xl shadow-md border">
       <h3 className="text-xl font-semibold mb-4 text-gray-700">{title}</h3>
+
       <div className="h-64">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data}>
-            <XAxis dataKey="name" stroke="#555" />
-            <YAxis stroke="#555" />
+            <XAxis dataKey="name" stroke="#888" />
+            <YAxis stroke="#888" />
             <Tooltip />
-            <Line dataKey={dataKey} stroke="#4A37FF" strokeWidth={3} />
+            <Line
+              type="monotone"
+              dataKey={dataKey}
+              stroke={color}
+              strokeWidth={3}
+            />
           </LineChart>
         </ResponsiveContainer>
       </div>
     </div>
   );
+}
+
+/* --- Helpers --- */
+function avg(surveys, key) {
+  if (!surveys.length) return "-";
+  const sum = surveys.reduce((a, s) => a + Number(s.measurements[key] || 0), 0);
+  return (sum / surveys.length).toFixed(2);
 }
