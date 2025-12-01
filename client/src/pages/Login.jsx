@@ -43,13 +43,12 @@ export default function Login() {
     <>
       <div className="bg-linear-to-tr from-[#005c] via-[#363795] to-[#24C6DC] w-full min-h-screen">
         <button
-          className="p-4"
-          onClick={() => {
-            navigate("/");
-          }}
+          onClick={() => navigate("/")}
+          className="absolute top-6 left-6 flex items-center justify-center w-12 h-12 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 transition"
         >
-          <ArrowLeftFromLine size={48} color="white" />
+          <ArrowLeftFromLine size={28} className="text-white" />
         </button>
+
         <div className="flex items-center justify-center h-[90vh]">
           <form
             onSubmit={handleLogin}

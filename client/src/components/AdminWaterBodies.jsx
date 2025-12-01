@@ -14,18 +14,13 @@ export default function AdminWaterBodies() {
       });
 
       const data = await res.json();
-      console.log("ALL SURVEYS:", data.surveys);
-
       if (!data.success) throw new Error("Failed to load surveys");
 
       const surveys = data.surveys;
-
-      // 🔥 GROUP SURVEYS BY WATER BODY NAME
       const grouped = {};
 
       surveys.forEach((s) => {
         const name = s.location?.name || "Unknown Water Body";
-
         if (!grouped[name]) {
           grouped[name] = {
             name,
@@ -33,11 +28,9 @@ export default function AdminWaterBodies() {
             surveys: [],
           };
         }
-
         grouped[name].surveys.push(s);
       });
 
-      // 🔥 Convert object → array format for the UI
       const finalWaterBodies = Object.values(grouped).map((wb) => {
         const sorted = [...wb.surveys].sort(
           (a, b) =>
@@ -50,14 +43,13 @@ export default function AdminWaterBodies() {
           city: wb.city,
           lastSurvey: sorted[0]?.timestamps?.serverReceivedTime || null,
           totalSurveys: wb.surveys.length,
-          surveys: wb.surveys, // keep full data for prediction
+          surveys: wb.surveys,
         };
       });
 
       setWaterBodies(finalWaterBodies);
       setLoading(false);
     } catch (e) {
-      console.error(e);
       setLoading(false);
     }
   };
@@ -74,47 +66,52 @@ export default function AdminWaterBodies() {
       <p className="text-gray-600">Select a water body to run AI prediction.</p>
 
       <div className="bg-white rounded-2xl shadow-lg p-6">
-        <table className="w-full text-left">
-          <thead>
-            <tr className="text-gray-500 border-b">
-              <th className="pb-3">Name</th>
-              <th className="pb-3">Location</th>
-              <th className="pb-3">Total Surveys</th>
-              <th className="pb-3">Last Survey</th>
-              <th className="pb-3">Action</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {waterBodies.map((b) => (
-              <tr key={b.name} className="border-b hover:bg-gray-50">
-                <td className="py-3 font-semibold">{b.name}</td>
-                <td className="py-3">{b.city}</td>
-
-                <td className="py-3">{b.totalSurveys}</td>
-
-                <td className="py-3">
-                  {b.lastSurvey
-                    ? new Date(b.lastSurvey).toLocaleString()
-                    : "No surveys"}
-                </td>
-
-                <td className="py-3">
-                  <button
-                    onClick={() =>
-                      navigate(`/admin/predict/${encodeURIComponent(b.name)}`, {
-                        state: { surveys: b.surveys, waterBodyName: b.name },
-                      })
-                    }
-                    className="px-4 py-2 bg-[#4A37FF] text-white rounded-lg shadow hover:opacity-90"
-                  >
-                    Run Prediction
-                  </button>
-                </td>
+        <div className="max-h-[420px] overflow-y-auto rounded-b-xl">
+          <table className="w-full text-left">
+            <thead className="sticky top-0 bg-white z-10 border-b">
+              <tr className="text-gray-500">
+                <th className="pb-3">Name</th>
+                <th className="pb-3">Location</th>
+                <th className="pb-3">Total Surveys</th>
+                <th className="pb-3">Last Survey</th>
+                <th className="pb-3">Action</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+
+            <tbody>
+              {waterBodies.map((b) => (
+                <tr key={b.name} className="border-b hover:bg-gray-50">
+                  <td className="py-3 font-semibold">{b.name}</td>
+                  <td className="py-3">India</td>
+                  <td className="py-3">{b.totalSurveys}</td>
+                  <td className="py-3">
+                    {b.lastSurvey
+                      ? new Date(b.lastSurvey).toLocaleString()
+                      : "No surveys"}
+                  </td>
+                  <td className="py-3">
+                    <button
+                      onClick={() =>
+                        navigate(
+                          `/admin/predict/${encodeURIComponent(b.name)}`,
+                          {
+                            state: {
+                              surveys: b.surveys,
+                              waterBodyName: b.name,
+                            },
+                          }
+                        )
+                      }
+                      className="px-4 py-2 bg-[#4A37FF] text-white rounded-lg shadow hover:opacity-90"
+                    >
+                      Run Prediction
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

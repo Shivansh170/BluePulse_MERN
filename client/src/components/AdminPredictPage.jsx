@@ -16,7 +16,7 @@ export default function AdminPredictPage() {
 
   const [loading, setLoading] = useState(true);
   const [surveys, setSurveys] = useState([]);
-  const [waterBody, setWaterBody] = useState({});
+  const [waterBody, setWaterBody] = useState({ name: "", city: "Unknown" });
   const [prediction, setPrediction] = useState(null);
 
   const passedSurveys = location.state?.surveys || null;
@@ -35,7 +35,7 @@ export default function AdminPredictPage() {
       const data = await res.json();
 
       const filtered = data.surveys.filter(
-        (s) => s.location?.name === waterBodyName
+        (s) => s.location?.name.trim() === waterBodyName.trim()
       );
 
       processSurveys(filtered);
@@ -49,7 +49,7 @@ export default function AdminPredictPage() {
     setSurveys(bodySurveys);
 
     setWaterBody({
-      name: waterBodyName,
+      name: waterBodyName.trim(),
       city: bodySurveys[0]?.location?.city || "Unknown",
     });
 
@@ -112,8 +112,11 @@ export default function AdminPredictPage() {
     <div className="space-y-12">
       {/* HEADER */}
       <div className="rounded-3xl p-10 shadow-xl bg-linear-to-r from-[#4A37FF] to-[#24C6DC] text-white">
-        <h1 className="text-5xl font-extrabold tracking-wide drop-shadow">
-          {waterBody.name}
+        <h1
+          className="text-5xl font-extrabold tracking-wide transition-opacity duration-300"
+          style={{ opacity: loading ? 0 : 1 }}
+        >
+          {waterBody?.name || waterBodyName || "Water Body"}
         </h1>
         <p className="text-lg mt-3 opacity-90">
           Advanced AI prediction & water quality analysis
@@ -161,7 +164,6 @@ export default function AdminPredictPage() {
 
       {/* PREDICTION SECTION */}
       <div className="bg-white p-10 rounded-3xl shadow-2xl border border-gray-200 space-y-10">
-        {/* HEADER */}
         <div className="flex items-center justify-between">
           <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight">
             AI Forecast
@@ -194,12 +196,10 @@ export default function AdminPredictPage() {
               </p>
             </div>
 
-            {/* NEXT 7 DAYS TITLE */}
             <h3 className="text-2xl font-semibold text-gray-900 mt-6">
               7-Day Trend Forecast
             </h3>
 
-            {/* FORECAST GRID */}
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-6 mt-4">
               {prediction["7_day_forecast"].map((day) => (
                 <div

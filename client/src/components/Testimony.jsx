@@ -3,46 +3,40 @@ export default function Testimony() {
     {
       title: "Real-time Monitoring",
       desc: "Efficient and precise tracking of water quality and parameters.",
-      review:
-        "This app has completely transformed how we monitor water quality in Delhi. The real-time data is incredibly accurate!",
-      author: "Dr. Ramesh Gupta, Environmentalist",
+      review: "This app transformed water monitoring. Extremely accurate.",
+      author: "Dr. Ramesh Gupta",
     },
     {
-      title: "User-friendly Interface",
-      desc: "Easy to use, even for people with no technical expertise.",
-      review:
-        "A user-friendly platform that's essential for tackling water pollution. Highly recommend it!",
-      author: "Ananya Verma, Surveyor",
+      title: "User-friendly",
+      desc: "Simple UI for citizens and surveyors.",
+      review: "Perfect for non-technical users. Smooth and intuitive.",
+      author: "Ananya Verma",
     },
     {
-      title: "Public Collaboration",
-      desc: "Involving the community in environmental monitoring and preservation.",
-      review:
-        "Blue Pulse is a game-changer for public awareness and participation in water body rejuvenation.",
-      author: "Rajeev Singh, NGO Volunteer",
+      title: "Community Impact",
+      desc: "Reports initiated cleanup drives within 48 hours.",
+      review: "Blue Pulse truly empowers community participation.",
+      author: "Rajeev Singh",
     },
   ];
 
   return (
-    <section className="text-center text-white py-12 animate-fadeIn">
-      <h2 className="text-3xl font-bold mb-8">
-        What People Say About Blue Pulse
+    <section className="py-16">
+      <h2 className="text-center text-3xl font-bold mb-10 text-white">
+        What People Say
       </h2>
 
-      <div className="flex flex-wrap justify-center gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-6">
         {cards.map((c, i) => (
-          <div key={i} className="card w-full max-w-xs perspective">
-            <div className="card-flip relative w-full h-80">
-              {/* Front */}
-              <div className="card-side absolute w-full h-full bg-cyan-600 text-white rounded-xl p-6 shadow-xl">
-                <h3 className="text-xl font-bold mt-12">{c.title}</h3>
-                <p className="text-sm mt-2">{c.desc}</p>
+          <div key={i} className="flip-card w-full h-64">
+            <div className="flip-card-inner">
+              <div className="flip-card-front">
+                <h3 className="text-xl font-semibold">{c.title}</h3>
+                <p className="mt-2 text-white/80 text-sm">{c.desc}</p>
               </div>
-
-              {/* Back */}
-              <div className="card-side absolute w-full h-full bg-black text-white rounded-xl p-6 shadow-xl rotate-y-180">
-                <p className="italic text-lg">{c.review}</p>
-                <span className="block mt-4 text-sm">{c.author}</span>
+              <div className="flip-card-back">
+                <p className="italic text-sm">"{c.review}"</p>
+                <p className="mt-4 text-xs text-white/90">{c.author}</p>
               </div>
             </div>
           </div>

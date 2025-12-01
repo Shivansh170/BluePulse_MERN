@@ -1,68 +1,60 @@
+// src/components/Footer.jsx
 import { Facebook, Twitter, Instagram, Linkedin } from "lucide-react";
+
 export default function Footer() {
   return (
-    <footer className="bg-[#121212] text-white px-5 py-10 font-roboto">
-      <div className="flex flex-wrap justify-between mb-5">
-        {/* About Section */}
-        <div className="w-full md:w-[30%] mb-5">
-          <h3 className="text-xl font-semibold mb-2">About Blue Pulse</h3>
-          <p className="text-sm leading-relaxed">
-            Blue Pulse is dedicated to restoring water bodies through real-time
-            monitoring and public collaboration. Together, we can ensure a
-            healthier environment for future generations.
+    <footer className="bg-[#04060a] text-white/80 mt-12">
+      <div className="container mx-auto px-6 py-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div>
+          <h4 className="text-white font-bold text-lg">Blue Pulse</h4>
+          <p className="mt-2 text-sm text-white/70">
+            Realtime water monitoring & community reporting to restore local
+            water bodies.
           </p>
         </div>
 
-        {/* Quick Links */}
-        <div className="w-full md:w-[30%] mb-5">
-          <h3 className="text-xl font-semibold mb-2">Quick Links</h3>
-          <ul className="space-y-2">
+        <div>
+          <h5 className="text-white font-semibold">Quick links</h5>
+          <ul className="mt-2 text-sm space-y-2">
             <li>
-              <a href="/" className="hover:text-[#24C6DC] transition">
+              <a href="/" className="hover:text-cyan-300">
                 Home
               </a>
             </li>
             <li>
-              <a href="#" className="hover:text-[#24C6DC] transition">
-                About Us
+              <a href="/about" className="hover:text-cyan-300">
+                About
               </a>
             </li>
             <li>
-              <a href="#" className="hover:text-[#24C6DC] transition">
-                Contact Us
-              </a>
-            </li>
-            <li>
-              <a href="#" className="hover:text-[#24C6DC] transition">
-                Terms of Service
+              <a href="/privacy" className="hover:text-cyan-300">
+                Privacy
               </a>
             </li>
           </ul>
         </div>
 
-        {/* Social Icons */}
-        <div className="w-full md:w-[30%] mb-5">
-          <h3 className="text-xl font-semibold mb-3">Follow Us</h3>
-          <div className="flex gap-4">
-            <a href="#">
+        <div>
+          <h5 className="text-white font-semibold">Follow us</h5>
+          <div className="mt-3 flex gap-3">
+            <a className="p-2 rounded bg-white/5">
               <Facebook />
             </a>
-            <a href="#">
+            <a className="p-2 rounded bg-white/5">
               <Twitter />
             </a>
-            <a href="#">
+            <a className="p-2 rounded bg-white/5">
               <Instagram />
             </a>
-            <a href="#">
+            <a className="p-2 rounded bg-white/5">
               <Linkedin />
             </a>
           </div>
         </div>
       </div>
 
-      {/* Bottom */}
-      <div className="text-center text-xs border-t border-white/20 pt-3 mt-5">
-        &copy; 2025 Blue Pulse | All rights reserved
+      <div className="border-t border-white/5 text-center py-4 text-xs">
+        &copy; {new Date().getFullYear()} Blue Pulse — All rights reserved
       </div>
     </footer>
   );

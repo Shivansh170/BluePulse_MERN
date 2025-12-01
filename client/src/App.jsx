@@ -15,6 +15,12 @@ import SurveyorHome from "./components/SurveyorHome";
 import SurveyorMySurveys from "./components/SurveyorMySurveys";
 import SurveyorSingle from "./components/SurveyorSingle";
 import SurveyorNewSurvey from "./components/SurveyorNewSurvey";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
+import SearchResults from "./pages/SearchResults";
+import HomeContent from "./components/HomeContent";
+import PredictPage from "./pages/PredictPage";
+
 export default function App() {
   let rawUser = sessionStorage.getItem("user");
 
@@ -33,7 +39,11 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Home />}>
+          <Route index element={<HomeContent />} />
+          <Route path="search" element={<SearchResults />} />
+          <Route path="/predict/:name" element={<PredictPage />} />
+        </Route>
         <Route path="/login" element={<Login />} />
 
         <Route path="/admin" element={<AdminDashboard />}>
@@ -54,6 +64,8 @@ export default function App() {
           <Route path="surveys/:surveyId" element={<SurveyorSingle />} />
           <Route path="new-survey" element={<SurveyorNewSurvey />} />
         </Route>
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
       </Routes>
     </BrowserRouter>
   );

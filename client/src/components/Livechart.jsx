@@ -4,53 +4,110 @@ import { Chart as ChartJS } from "chart.js/auto";
 
 export default function LiveChart() {
   const [chartData, setChartData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  // fallback (only if API fails)
+  const fallback = {
+    "Yamuna River": { ph: 7.2, turbidity: 12, temperature: 28 },
+    "Rithala Lake": { ph: 6.9, turbidity: 8, temperature: 26 },
+    "Hauz Khas": { ph: 7.6, turbidity: 5, temperature: 25 },
+  };
 
   useEffect(() => {
-    fetch("/api/chart-data")
-      .then((res) => res.json())
-      .then((data) => {
-        const labels = Object.keys(data);
+    let canceled = false;
 
-        setChartData({
-          labels,
-          datasets: [
-            {
-              label: "pH Level",
-              data: labels.map((loc) => data[loc].ph),
-              backgroundColor: "rgba(75, 192, 192, 0.2)",
-              borderColor: "rgba(75, 192, 192, 1)",
-              borderWidth: 1,
-            },
-            {
-              label: "Turbidity",
-              data: labels.map((loc) => data[loc].turbidity),
-              backgroundColor: "rgba(153, 102, 255, 0.2)",
-              borderColor: "rgba(153, 102, 255, 1)",
-              borderWidth: 1,
-            },
-            {
-              label: "Temperature",
-              data: labels.map((loc) => data[loc].temperature),
-              backgroundColor: "rgba(255, 159, 64, 0.2)",
-              borderColor: "rgba(255, 159, 64, 1)",
-              borderWidth: 1,
-            },
-          ],
+    fetch("http://localhost:3000/api/user/results")
+      .then((r) => r.json())
+      .then((data) => {
+        if (canceled) return;
+        if (!data.success || !data.waterBodies) throw new Error("API error");
+
+        let bodies = data.waterBodies;
+        if (bodies.length > 3) {
+          bodies = bodies
+            .sort((a, b) => b.totalSurveys - a.totalSurveys)
+            .slice(0, 3);
+        }
+        const formatted = {};
+        bodies.forEach((wb) => {
+          formatted[wb.name] = {
+            ph: wb.avgPH,
+            turbidity: wb.avgTurbidity,
+            temperature: wb.avgTemperature,
+          };
         });
+
+        buildChart(formatted);
       })
-      .catch((err) => console.error("Chart fetch error:", err));
+      .catch(() => {
+        buildChart(fallback);
+      })
+      .finally(() => {
+        if (!canceled) setLoading(false);
+      });
+
+    return () => (canceled = true);
   }, []);
 
-  return (
-    <div className="relative bg-black/70 w-[80%] mx-auto mt-10 rounded-xl p-6">
-      <div className="absolute top-5 left-5 bg-red-600 text-white px-3 py-1 rounded-md font-playwrite">
-        Live
-      </div>
+  function buildChart(data) {
+    const labels = Object.keys(data);
 
-      {chartData ? (
-        <Bar data={chartData} />
-      ) : (
-        <p className="text-center text-white">Loading chart...</p>
+    setChartData({
+      labels,
+      datasets: [
+        {
+          label: "pH",
+          data: labels.map((l) => data[l].ph ?? null),
+          backgroundColor: "rgba(34,197,94,0.6)",
+          borderColor: "rgba(34,197,94,1)",
+          borderWidth: 1,
+        },
+        {
+          label: "Turbidity (NTU)",
+          data: labels.map((l) => data[l].turbidity ?? null),
+          backgroundColor: "rgba(59,130,246,0.6)",
+          borderColor: "rgba(59,130,246,1)",
+          borderWidth: 1,
+        },
+        {
+          label: "Temperature (°C)",
+          data: labels.map((l) => data[l].temperature ?? null),
+          backgroundColor: "rgba(14,165,233,0.6)",
+          borderColor: "rgba(14,165,233,1)",
+          borderWidth: 1,
+        },
+      ],
+    });
+  }
+
+  return (
+    <div className="bg-white/5 p-6 rounded-xl shadow-lg h-[400px]">
+      {loading && !chartData && (
+        <div className="py-10 text-center text-white/70">Loading chart...</div>
+      )}
+
+      {chartData && (
+        <Bar
+          data={chartData}
+          options={{
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: { color: "#fff" },
+              },
+              x: {
+                ticks: { color: "#fff" },
+              },
+            },
+            plugins: {
+              legend: {
+                labels: { color: "#fff" },
+              },
+            },
+          }}
+        />
       )}
     </div>
   );
