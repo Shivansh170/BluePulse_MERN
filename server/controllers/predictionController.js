@@ -2,7 +2,7 @@ const { predictWaterQuality } = require("../services/predictionService");
 
 const predictWaterQualityController = async (req, res) => {
   try {
-    const { history, current, location } = req.body;
+    const { history, current = {}, location } = req.body;
     if (!history || !current || !location) {
       return res.status(400).json({
         success: false,

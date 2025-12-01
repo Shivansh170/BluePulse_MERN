@@ -14,4 +14,5 @@ router.get("/results", fetchAllSurveys);
 router.get("/results/:waterBodyName", fetchSingleWaterBody);
 router.get("/total-surveys", countNumberOfSurveys);
 router.get("/total-surveyors", countNumberOfSurveyors);
+
 module.exports = router;

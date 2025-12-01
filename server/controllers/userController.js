@@ -2,7 +2,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const WaterQualitySurveys = require("../models/WaterQualitySurveys");
-
+const predictWaterQuality = require("../services/predictionService");
 const userLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -180,6 +180,7 @@ const countNumberOfSurveyors = async (req, res) => {
     );
   }
 };
+
 module.exports = {
   userLogin,
   fetchAllSurveys,
