@@ -9,6 +9,7 @@ const {
   adminStats,
   getWaterBodiesStatus,
   deleteSurveyor,
+  registerUser,
 } = require("../controllers/adminController");
 
 const express = require("express");
@@ -18,7 +19,7 @@ const role = require("../middlewares/role");
 
 router.get("/fetch-all-surveyors", auth, role("Admin"), fetchAllSurveyors);
 router.delete("/surveyor/:surveyorId", auth, role("Admin"), deleteSurveyor); // NEW
-
+router.post("/createUser", auth, role("Admin"), registerUser);
 router.get("/surveys", auth, role("Admin"), fetchGlobally);
 router.get("/surveys/pending", auth, role("Admin"), getPendingSurveys);
 router.get("/surveys/:surveyorId", auth, role("Admin"), fetchAllSurveys);

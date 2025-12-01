@@ -1,6 +1,35 @@
 const User = require("../models/User");
 const WaterQualitySurvey = require("../models/WaterQualitySurveys");
+const bcrypt = require("bcryptjs");
+const registerUser = async (req, res) => {
+  try {
+    const { name, email, password, role } = req.body;
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(409).json({
+        success: false,
+        message: "A user with this email already exists.",
+      });
+    }
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = await User.create({
+      name,
+      email,
+      password: hashedPassword,
+      role,
+    });
 
+    return res.status(201).json({
+      success: true,
+      message: `${name} registered as ${role}.`,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 const fetchAllSurveyors = async (req, res) => {
   try {
     const surveyors = await User.find({ role: "Surveyor" });
@@ -297,4 +326,5 @@ module.exports = {
   adminStats,
   getWaterBodiesStatus,
   deleteSurveyor,
+  registerUser,
 };
