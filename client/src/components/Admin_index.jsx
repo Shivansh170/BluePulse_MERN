@@ -1,62 +1,59 @@
 import { useEffect, useState } from "react";
-
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+} from "recharts";
+import AdminWaterBodies from "./AdminWaterBodies";
+import { ChevronRight, ChevronLeft } from "lucide-react";
 export default function AdminHero({ name }) {
   const [loading, setLoading] = useState(true);
   const [surveys, setSurveys] = useState([]);
   const [error, setError] = useState(null);
+  const [currentWBIndex, setCurrentWBIndex] = useState(0);
 
-  // Fetch all surveys using the admin route
+  const token = sessionStorage.getItem("accessToken");
+
+  const fetchSurveys = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch("http://localhost:3000/api/admin/surveys", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.message);
+      setSurveys(data.surveys);
+      setLoading(false);
+    } catch (err) {
+      setError(err.message);
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchSurveys = async () => {
-      try {
-        const token = sessionStorage.getItem("accessToken");
-
-        const res = await fetch("http://localhost:3000/api/admin/surveys", {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        const data = await res.json();
-        if (!data.success) throw new Error(data.message);
-
-        setSurveys(data.surveys);
-        setLoading(false);
-      } catch (err) {
-        console.error("Dashboard fetch error:", err.message);
-        setError(err.message);
-        setLoading(false);
-      }
-    };
-
     fetchSurveys();
   }, []);
 
-  // =============================
-  // 📊 Derived Dashboard Metrics
-  // =============================
-
   const totalSurveys = surveys.length;
-
   const totalWaterBodies = new Set(surveys.map((s) => s.location?.name)).size;
-
   const activeSurveyors = new Set(surveys.map((s) => s.user?._id)).size;
 
-  const criticalSurveys = surveys.filter((s) => {
+  const criticalAlertsCount = surveys.filter((s) => {
     const ac = s.autoChecks;
     return (
-      s.status === "Flagged for Resurvey" ||
-      ac?.phValid === false ||
-      ac?.temperatureValid === false ||
-      ac?.turbidityValid === false ||
-      ac?.dissolvedOxygenValid === false
+      !ac?.phValid ||
+      !ac?.temperatureValid ||
+      !ac?.turbidityValid ||
+      !ac?.dissolvedOxygenValid ||
+      s.status === "Flagged for Resurvey"
     );
-  });
+  }).length;
 
-  const criticalAlertsCount = criticalSurveys.length;
-
-  // Recent surveys (latest by serverReceivedTime)
   const recentSurveys = [...surveys]
     .sort(
       (a, b) =>
@@ -65,103 +62,192 @@ export default function AdminHero({ name }) {
     )
     .slice(0, 5);
 
-  // =============================
-  // ⏳ Loading & Error UI
-  // =============================
+  const grouped = {};
+  surveys.forEach((s) => {
+    const name = s.location?.name || "Unknown";
+    if (!grouped[name]) grouped[name] = [];
+    grouped[name].push(s);
+  });
 
-  if (loading) {
-    return <div className="text-gray-500 text-lg p-6">Loading dashboard…</div>;
-  }
+  const waterBodies = Object.keys(grouped).map((name) => ({
+    name,
+    surveys: grouped[name].sort(
+      (a, b) =>
+        new Date(a.timestamps?.serverReceivedTime) -
+        new Date(b.timestamps?.serverReceivedTime)
+    ),
+  }));
 
-  if (error) {
-    return (
-      <div className="text-red-500 text-lg p-6">
-        Error loading dashboard: {error}
-      </div>
+  if (loading) return <p className="p-6 text-gray-600 text-lg">Loading…</p>;
+  if (error) return <p className="p-6 text-red-500 text-lg">{error}</p>;
+  if (!waterBodies.length)
+    return <p className="p-6 text-gray-600">No Water Bodies Found</p>;
+
+  const safeIndex = Math.min(currentWBIndex, waterBodies.length - 1);
+  const currentWB = waterBodies[safeIndex];
+
+  const chartDataWB = currentWB.surveys.map((s) => ({
+    name: new Date(s.timestamps?.serverReceivedTime).toLocaleDateString(),
+    ph: s.measurements?.ph,
+    turbidity: s.measurements?.turbidity,
+    temp: s.measurements?.temperature,
+    do: s.measurements?.dissolvedOxygen,
+  }));
+
+  const prevWB = () => {
+    setCurrentWBIndex((prev) =>
+      prev === 0 ? waterBodies.length - 1 : prev - 1
     );
-  }
+  };
 
-  // =============================
-  // 💎 Final Dynamic Dashboard UI
-  // =============================
+  const nextWB = () => {
+    setCurrentWBIndex((prev) => (prev + 1) % waterBodies.length);
+  };
+
   return (
-    <>
-      {/* Header */}
-      <div className="mb-6">
-        <h2 className="text-4xl font-bold text-[#005c]">Welcome, {name}</h2>
+    <div className="space-y-10">
+      <div>
+        <h2 className="text-5xl font-bold text-[#4A37FF]">Welcome, {name}</h2>
         <p className="text-gray-600 text-lg">
-          Here’s what’s happening in India's water bodies today.
+          Monitoring India's water bodies in real-time.
         </p>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white shadow-xl p-6 rounded-xl border-l-4 border-[#005c]">
-          <h3 className="text-gray-500">Total Water Bodies</h3>
-          <p className="text-3xl font-bold">{totalWaterBodies}</p>
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        {[
+          {
+            label: "Water Bodies",
+            value: totalWaterBodies,
+            color: "from-blue-400 to-blue-600",
+          },
+          {
+            label: "Total Surveys",
+            value: totalSurveys,
+            color: "from-pink-400 to-purple-600",
+          },
+          {
+            label: "Active Surveyors",
+            value: activeSurveyors,
+            color: "from-green-400 to-green-600",
+          },
+          {
+            label: "Critical Alerts",
+            value: criticalAlertsCount,
+            color: "from-orange-400 to-red-500",
+          },
+        ].map((c, i) => (
+          <div
+            key={i}
+            className="bg-white p-6 rounded-2xl shadow-md flex flex-col items-center"
+          >
+            <div
+              className={`w-28 h-28 flex items-center justify-center rounded-full text-white text-3xl font-bold bg-linear-to-br ${c.color}`}
+            >
+              {c.value}
+            </div>
+            <p className="mt-3 text-gray-700 text-lg">{c.label}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="bg-white p-6 rounded-2xl shadow-md">
+        <div className="flex justify-between items-center mb-4">
+          <button
+            onClick={prevWB}
+            className="px-3 py-3 bg-[#005c] rounded-full hover:bg-[#4a37ff]"
+          >
+            <ChevronLeft color={"white"} />
+          </button>
+          <h3 className="text-2xl font-bold text-[#4A37FF]">
+            {currentWB.name}
+          </h3>
+          <button
+            onClick={nextWB}
+            className="px-3 py-3 bg-[#005c] rounded-full hover:bg-[#4a37ff]"
+          >
+            <ChevronRight color={"white"} />
+          </button>
         </div>
 
-        <div className="bg-white shadow-xl p-6 rounded-xl border-l-4 border-[#24C6DC]">
-          <h3 className="text-gray-500">Total Surveys</h3>
-          <p className="text-3xl font-bold">{totalSurveys}</p>
-        </div>
-
-        <div className="bg-white shadow-xl p-6 rounded-xl border-l-4 border-[#363795]">
-          <h3 className="text-gray-500">Active Surveyors</h3>
-          <p className="text-3xl font-bold">{activeSurveyors}</p>
-        </div>
-
-        <div className="bg-white shadow-xl p-6 rounded-xl border-l-4 border-red-500">
-          <h3 className="text-gray-500">Critical Alerts</h3>
-          <p className="text-3xl font-bold">{criticalAlertsCount}</p>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <ChartCard
+            title="pH Trend"
+            type="line"
+            dataKey="ph"
+            data={chartDataWB}
+          />
+          <ChartCard
+            title="Turbidity Levels"
+            type="bar"
+            dataKey="turbidity"
+            data={chartDataWB}
+          />
+          <ChartCard
+            title="Temperature Trend"
+            type="line"
+            dataKey="temp"
+            data={chartDataWB}
+          />
+          <ChartCard
+            title="Dissolved Oxygen"
+            type="bar"
+            dataKey="do"
+            data={chartDataWB}
+          />
         </div>
       </div>
 
-      {/* Alerts + Recent Surveys */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-10">
-        {/* Critical Alerts */}
-        <div className="bg-white shadow-xl p-6 rounded-xl">
-          <h3 className="text-2xl font-semibold text-[#363795] mb-4">
-            Critical Alerts
-          </h3>
+      <div className="bg-white p-6 rounded-2xl shadow-md">
+        <h3 className="text-2xl font-semibold text-gray-700 mb-4">
+          Recent Survey Activity
+        </h3>
+        <ul className="space-y-3">
+          {recentSurveys.map((s) => (
+            <li key={s._id} className="p-4 bg-gray-100 rounded-lg shadow-sm">
+              <strong>{s.user?.name}</strong> surveyed{" "}
+              <strong>{s.location?.name}</strong> — pH {s.measurements?.ph},
+              Turbidity {s.measurements?.turbidity}, Temp{" "}
+              {s.measurements?.temperature}°C
+            </li>
+          ))}
+        </ul>
+      </div>
 
-          {criticalAlertsCount === 0 ? (
-            <p className="text-green-600 bg-green-50 p-4 rounded-lg">
-              No critical alerts 🎉
-            </p>
+      <div className="bg-white p-6 rounded-2xl shadow-md">
+        <AdminWaterBodies />
+      </div>
+    </div>
+  );
+}
+
+function ChartCard({ title, type, dataKey, data }) {
+  return (
+    <div className="bg-white p-6 rounded-2xl shadow-md">
+      <h3 className="text-xl font-semibold mb-4 text-gray-700">{title}</h3>
+      <div className="h-64">
+        <ResponsiveContainer width="100%" height="100%">
+          {type === "line" ? (
+            <LineChart data={data}>
+              <XAxis dataKey="name" stroke="#555" />
+              <YAxis stroke="#555" />
+              <Tooltip />
+              <Line
+                type="monotone"
+                dataKey={dataKey}
+                stroke="#4A37FF"
+                strokeWidth={3}
+              />
+            </LineChart>
           ) : (
-            <ul className="space-y-3">
-              {criticalSurveys.slice(0, 5).map((s) => (
-                <li key={s._id} className="bg-red-100 p-4 rounded-lg shadow">
-                  <strong>{s.location?.name}:</strong>{" "}
-                  {!s.autoChecks.phValid && "pH abnormal. "}
-                  {!s.autoChecks.turbidityValid && "High turbidity. "}
-                  {!s.autoChecks.temperatureValid &&
-                    "Temperature out of range. "}
-                  {!s.autoChecks.dissolvedOxygenValid && "Low oxygen levels. "}
-                </li>
-              ))}
-            </ul>
+            <BarChart data={data}>
+              <XAxis dataKey="name" stroke="#555" />
+              <YAxis stroke="#555" />
+              <Tooltip />
+              <Bar dataKey={dataKey} fill="#4A37FF" />
+            </BarChart>
           )}
-        </div>
-
-        {/* Recent Surveys */}
-        <div className="bg-white shadow-xl p-6 rounded-xl">
-          <h3 className="text-2xl font-semibold text-[#24C6DC] mb-4">
-            Recent Surveys
-          </h3>
-
-          <ul className="space-y-3">
-            {recentSurveys.map((s) => (
-              <li key={s._id} className="bg-blue-50 p-4 rounded-lg shadow">
-                <strong>{s.user?.name}:</strong> surveyed{" "}
-                <strong>{s.location?.name}</strong> — pH {s.measurements?.ph},
-                Turbidity {s.measurements?.turbidity}
-              </li>
-            ))}
-          </ul>
-        </div>
+        </ResponsiveContainer>
       </div>
-    </>
+    </div>
   );
 }
