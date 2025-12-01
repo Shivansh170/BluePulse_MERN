@@ -1,5 +1,5 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-
+import { AdminRoute, SurveyorRoute } from "./components/ProtectedRoutes";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import AdminDashboard from "./pages/Admin";
@@ -46,19 +46,30 @@ export default function App() {
         </Route>
         <Route path="/login" element={<Login />} />
 
-        <Route path="/admin" element={<AdminDashboard />}>
+        <Route
+          path="/admin"
+          element={
+            <AdminRoute>
+              <AdminDashboard />
+            </AdminRoute>
+          }
+        >
           <Route index element={<AdminHero name={adminName} />} />
           <Route path="surveyors" element={<ManageSurveyors />} />
           <Route path="surveys" element={<AdminAllSurveys />} />
           <Route path="surveys/:surveyId" element={<AdminSingleSurvey />} />
           <Route path="water-bodies" element={<WaterBodiesStatus />} />
-          <Route
-            path="/admin/predict/:waterBodyName"
-            element={<AdminPredictPage />}
-          />
+          <Route path="predict/:waterBodyName" element={<AdminPredictPage />} />
         </Route>
 
-        <Route path="/surveyor" element={<SurveyorDashboard />}>
+        <Route
+          path="/surveyor"
+          element={
+            <SurveyorRoute>
+              <SurveyorDashboard />
+            </SurveyorRoute>
+          }
+        >
           <Route index element={<SurveyorHome />} />
           <Route path="surveys" element={<SurveyorMySurveys />} />
           <Route path="surveys/:surveyId" element={<SurveyorSingle />} />

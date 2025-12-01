@@ -16,7 +16,6 @@ export default function SurveyorNewSurvey() {
     dissolvedOxygen: "",
   });
 
-  // 📌 Capture live location
   const captureLocation = () => {
     if (!navigator.geolocation) {
       alert("GPS not supported on this device");
@@ -28,18 +27,12 @@ export default function SurveyorNewSurvey() {
         const { latitude, longitude } = pos.coords;
         setLat(latitude);
         setLng(longitude);
-
-        // auto name
         setLocation(
           `Lat: ${latitude.toFixed(4)}, Lon: ${longitude.toFixed(4)}`
         );
-
         alert("Live location captured!");
       },
-      (err) => {
-        console.error(err);
-        alert("Unable to get your location!");
-      }
+      () => alert("Unable to get your location!")
     );
   };
 
@@ -73,30 +66,29 @@ export default function SurveyorNewSurvey() {
     });
 
     const data = await res.json();
-    if (data.success) {
-      alert("Survey Created Successfully!");
-    } else {
-      alert("Error: " + data.error);
-    }
+    if (data.success) alert("Survey Created Successfully!");
+    else alert("Error: " + data.error);
   };
+
+  const inputClasses =
+    "w-full p-3 rounded-lg border focus:outline-none focus:border-0 focus:ring-2 focus:ring-[#4A37FF]";
 
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-white p-8 rounded-2xl shadow-xl space-y-8 max-w-3xl mx-auto border border-gray-200"
+      className="bg-white p-6 sm:p-8 rounded-2xl shadow-xl space-y-8 max-w-3xl mx-auto border border-gray-200"
     >
-      <h2 className="text-4xl font-bold text-[#4A37FF] mb-4">
+      <h2 className="text-3xl sm:text-4xl font-bold text-[#4A37FF] mb-4">
         Submit New Survey
       </h2>
 
-      {/* Location Section */}
-      <div className="space-y-3 bg-gray-50 p-6 rounded-xl border">
+      <div className="space-y-3 bg-gray-50 p-5 sm:p-6 rounded-xl border">
         <label className="font-semibold text-lg">Location</label>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col sm:flex-row items-center gap-3">
           <input
             type="text"
-            className="flex-1 p-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-[#4A37FF] focus:border-0"
+            className={inputClasses}
             placeholder="Enter location name or use GPS"
             value={location}
             onChange={(e) => setLocation(e.target.value)}
@@ -106,9 +98,8 @@ export default function SurveyorNewSurvey() {
           <button
             type="button"
             onClick={captureLocation}
-            className="flex items-center gap-2 bg-[#4A37FF] text-white px-4 py-3 rounded-lg hover:bg-[#3726d9]"
+            className="flex items-center justify-center gap-2 bg-[#4A37FF] text-white px-2 py-1 rounded-lg hover:bg-[#3726d9] w-full sm:w-auto"
           >
-            <MapPinned size={18} />
             Live Location
           </button>
         </div>
@@ -120,17 +111,16 @@ export default function SurveyorNewSurvey() {
         )}
       </div>
 
-      {/* Measurements Section */}
-      <div className="bg-gray-50 p-6 rounded-xl border space-y-4">
+      <div className="bg-gray-50 p-5 sm:p-6 rounded-xl border space-y-4">
         <label className="font-semibold text-lg">Measurements</label>
 
-        <div className="grid grid-cols-2 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           {["ph", "turbidity", "temperature", "dissolvedOxygen"].map((key) => (
             <div key={key}>
               <label className="font-medium">{key.toUpperCase()}</label>
               <input
                 type="number"
-                className="w-full p-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-[#4A37FF] focus:border-0"
+                className={inputClasses}
                 value={measurements[key]}
                 onChange={(e) =>
                   setMeasurements({ ...measurements, [key]: e.target.value })
@@ -142,23 +132,21 @@ export default function SurveyorNewSurvey() {
         </div>
       </div>
 
-      {/* Photo Proof */}
-      <div className="bg-gray-50 p-6 rounded-xl border space-y-3">
+      <div className="bg-gray-50 p-5 sm:p-6 rounded-xl border space-y-3">
         <label className="font-semibold text-lg">Photo Proof (URL)</label>
         <input
           type="text"
-          placeholder="Upload someplace & paste the link here"
-          className="w-full p-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-[#4A37FF] focus:border-0"
+          placeholder="Upload photo somewhere and paste the link"
+          className={inputClasses}
           value={photoProof}
           onChange={(e) => setPhotoProof(e.target.value)}
         />
       </div>
 
-      {/* Submit Button */}
       <div className="text-right">
         <button
           type="submit"
-          className="bg-linear-to-r from-[#4A37FF] to-[#6C5BFF] text-white px-8 py-4 rounded-xl text-xl hover:opacity-90 shadow-md "
+          className="bg-linear-to-r from-[#4A37FF] to-[#6C5BFF] text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl text-lg sm:text-xl hover:opacity-90 shadow-md w-full sm:w-auto"
         >
           Submit Survey
         </button>

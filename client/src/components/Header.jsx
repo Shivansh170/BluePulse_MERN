@@ -5,6 +5,7 @@ export default function Header() {
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
   const navigate = useNavigate();
+
   function normalize(str) {
     if (!str) return "";
     const stopWords = [
@@ -20,16 +21,14 @@ export default function Header() {
       "waterbody",
       "water",
       "dam",
-      "river",
-      "lake",
     ];
     return str
       .toLowerCase()
-      .replace(/[^a-z0-9\s]/g, "") // keep spaces
-      .split(/\s+/) // words
-      .filter((w) => w && !stopWords.includes(w)) // remove unwanted words
-      .sort() // SORT— makes order irrelevant
-      .join(""); // final comparable string
+      .replace(/[^a-z0-9\s]/g, "")
+      .split(/\s+/)
+      .filter((w) => w && !stopWords.includes(w))
+      .sort()
+      .join("");
   }
 
   const submit = (e) => {
@@ -37,18 +36,20 @@ export default function Header() {
     if (q.trim()) {
       const cleaned = normalize(q.trim());
       navigate(`/search?q=${encodeURIComponent(cleaned)}`);
+      setOpen(false);
     }
   };
 
   return (
-    <header className="bg-[#06070a] text-white shadow-sm sticky top-0 z-40">
-      <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+    <header className="bg-[#06070a] text-white shadow-md sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+        {/* LEFT - Logo + Nav */}
         <div className="flex items-center gap-6">
-          <Link to="/" className="text-2xl font-bold">
+          <Link to="/" className="text-2xl font-bold whitespace-nowrap">
             Blue Pulse
           </Link>
 
-          <nav className="hidden md:flex gap-4">
+          <nav className="hidden md:flex gap-6 text-[1rem]">
             <Link to="/" className="hover:text-cyan-300 transition">
               Home
             </Link>
@@ -58,34 +59,38 @@ export default function Header() {
           </nav>
         </div>
 
+        {/* RIGHT - Search + Buttons */}
         <div className="flex items-center gap-3">
-          <form onSubmit={submit} className="flex items-center gap-0">
+          {/* Desktop Search */}
+          <form onSubmit={submit} className="hidden sm:flex items-center gap-0">
             <input
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              placeholder="Search a location..."
-              className="px-3 py-1 rounded-l-full outline-none bg-white text-black border border-gray-300 shadow-sm w-40 md:w-56"
+              placeholder="Search location..."
+              className="px-3 py-1 rounded-l-full outline-none bg-white text-black border border-gray-300 shadow-sm w-36 sm:w-48 md:w-56 lg:w-64 transition-all"
               required
             />
             <button
               type="submit"
-              className="bg-cyan-500 text-black px-4 py-1 rounded-r-full font-semibold hover:bg-cyan-400 transition border border-cyan-500"
+              className="bg-cyan-500 text-black px-4 py-1 rounded-r-full font-semibold hover:bg-cyan-400 border border-cyan-500 transition"
             >
               Search
             </button>
           </form>
 
+          {/* Desktop Login */}
           <div className="hidden md:block">
             <Link
               to="/login"
-              className="px-4 py-1 rounded-full bg-white text-black font-semibold"
+              className="px-4 py-1 rounded-full bg-white text-black font-semibold shadow-sm"
             >
               Login
             </Link>
           </div>
 
+          {/* Hamburger */}
           <button
-            className="md:hidden px-3 py-1 border border-white/10 rounded"
+            className="md:hidden px-3 py-2 border border-white/20 rounded-lg text-xl"
             onClick={() => setOpen(!open)}
             aria-expanded={open}
           >
@@ -94,38 +99,57 @@ export default function Header() {
         </div>
       </div>
 
-      {open && (
-        <div className="md:hidden bg-[#0a0f1a] px-4 py-4 border-t border-white/5">
-          <form onSubmit={submit} className="flex gap-2 mb-3">
+      {/* MOBILE MENU */}
+      <div
+        className={`md:hidden bg-[#0a0f1a] overflow-hidden transition-all duration-300 border-t border-white/10 ${
+          open ? "max-h-[500px] py-4" : "max-h-0 py-0"
+        }`}
+      >
+        {/* Mobile Search */}
+        <form onSubmit={submit} className="flex px-4 mb-4 w-full gap-2">
+          <div className="flex-1 flex items-center bg-white rounded-full overflow-hidden shadow-sm border border-gray-300">
             <input
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              placeholder="Search a location..."
-              className="flex-1 px-3 py-2 rounded-l-full text-black"
+              placeholder="Search location..."
+              className="flex-1 px-4 py-2 text-black outline-none text-sm"
+              required
             />
-            <button className="bg-cyan-500 px-3 py-2 rounded-r-full font-semibold text-black">
-              Search
-            </button>
-          </form>
+          </div>
 
-          <nav className="flex flex-col gap-2">
-            <Link to="/" onClick={() => setOpen(false)} className="py-2">
-              Home
-            </Link>
-            <Link to="/about" onClick={() => setOpen(false)} className="py-2">
-              About
-            </Link>
+          <button
+            type="submit"
+            className="bg-cyan-500 text-black px-4 py-2 rounded-full font-semibold hover:bg-cyan-400 transition whitespace-nowrap"
+          >
+            Search
+          </button>
+        </form>
 
-            <Link
-              to="/login"
-              onClick={() => setOpen(false)}
-              className="py-2 font-semibold"
-            >
-              Login
-            </Link>
-          </nav>
-        </div>
-      )}
+        {/* Mobile Nav */}
+        <nav className="flex flex-col gap-3 px-4 text-lg">
+          <Link
+            to="/"
+            onClick={() => setOpen(false)}
+            className="py-2 border-b border-white/10"
+          >
+            Home
+          </Link>
+          <Link
+            to="/about"
+            onClick={() => setOpen(false)}
+            className="py-2 border-b border-white/10"
+          >
+            About
+          </Link>
+          <Link
+            to="/login"
+            onClick={() => setOpen(false)}
+            className="py-2 font-semibold"
+          >
+            Login
+          </Link>
+        </nav>
+      </div>
     </header>
   );
 }

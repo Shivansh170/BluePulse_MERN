@@ -67,10 +67,17 @@ const getWaterBodiesStatus = async (req, res) => {
       const { ph, turbidity, temperature, dissolvedOxygen } = survey;
       let score = 0;
 
-      if (ph >= 6.5 && ph <= 8.5) score++;
-      if (turbidity <= 5) score++;
-      if (temperature >= 18 && temperature <= 28) score++;
-      if (dissolvedOxygen >= 5) score++;
+      if (ph >= 6.5 && ph <= 8.5) score += 1;
+      else if (ph >= 6.2 && ph <= 9.0) score += 0.5;
+
+      if (turbidity <= 5) score += 1;
+      else if (turbidity > 5 && turbidity <= 15) score += 0.5;
+
+      if (temperature >= 20 && temperature <= 28) score += 1;
+      else if (temperature >= 15 && temperature <= 34) score += 0.5;
+
+      if (dissolvedOxygen >= 6) score += 1;
+      else if (dissolvedOxygen >= 5) score += 0.5;
 
       let status = "";
       if (score === 4) status = "Good";

@@ -24,12 +24,16 @@ export default function Login() {
         alert(data.message || "Login failed");
         return; // ⛔ stop here
       }
-
-      // login successful
       sessionStorage.setItem("accessToken", data.token);
-      sessionStorage.setItem("user", JSON.stringify(data.user));
+      sessionStorage.setItem(
+        "user",
+        JSON.stringify({
+          ...data.user,
+          role: data.user.role.toLowerCase(), // 🔥 FIX HERE
+        })
+      );
 
-      if (data.user.role === "Admin") {
+      if (data.user.role.toLowerCase() === "admin") {
         navigate("/admin");
       } else {
         navigate("/surveyor");
