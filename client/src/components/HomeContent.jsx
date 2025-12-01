@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import LiveChart from "../components/Livechart";
 import Testimony from "../components/Testimony";
 import "../pages/Home.css";
-
+import { Link } from "react-router-dom";
 export default function HomeContent() {
   const [surveyors, setSurveyors] = useState(0);
   const [surveys, setSurveys] = useState(0);
