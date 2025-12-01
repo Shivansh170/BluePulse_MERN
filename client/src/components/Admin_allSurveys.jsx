@@ -5,6 +5,7 @@ export default function AdminAllSurveys() {
   const navigate = useNavigate();
   const [surveys, setSurveys] = useState([]);
   const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(true); // ← NEW
   const [page, setPage] = useState(1);
   const pageSize = 10;
 
@@ -12,16 +13,21 @@ export default function AdminAllSurveys() {
     const fetchAllsurveys = async () => {
       try {
         const token = sessionStorage.getItem("accessToken");
-        const res = await fetch("http://localhost:3000/api/admin/surveys", {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const res = await fetch(
+          "https://bluepulse-mern.onrender.com/api/admin/surveys",
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
         const data = await res.json();
         setSurveys(data.surveys || []);
       } catch (error) {
         console.log("Error fetching surveys:", error.message);
+      } finally {
+        setLoading(false); // ← STOP LOADING
       }
     };
     fetchAllsurveys();
@@ -40,6 +46,16 @@ export default function AdminAllSurveys() {
         return "bg-gray-100 text-gray-600 border border-gray-300";
     }
   }
+
+  // ------------- Loader UI -------------
+  if (loading) {
+    return (
+      <div className="w-full h-[60vh] flex justify-center items-center">
+        <div className="w-14 h-14 border-4 border-[#24C6DC] border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+  // -------------------------------------
 
   const filteredSurveys = surveys.filter((s) =>
     (s.location?.name + s.user?.name)
@@ -80,6 +96,12 @@ export default function AdminAllSurveys() {
           }}
         />
       </div>
+
+      {/* ---- REST OF YOUR EXISTING COMPONENT (unchanged) ---- */}
+      {/* MOBILE VIEW */}
+      {/* DESKTOP TABLE */}
+      {/* PAGINATION */}
+      {/* (Everything below remains unchanged) */}
 
       {/* MOBILE VIEW */}
       <div className="md:hidden space-y-4">
@@ -148,7 +170,6 @@ export default function AdminAllSurveys() {
           );
         })}
 
-        {/* Mobile Pagination */}
         <div className="flex justify-between items-center mt-4">
           <button
             onClick={prevPage}
@@ -178,7 +199,7 @@ export default function AdminAllSurveys() {
         </div>
       </div>
 
-      {/* DESKTOP TABLE (unchanged code) */}
+      {/* DESKTOP TABLE */}
       <div className="hidden md:block overflow-x-auto rounded-xl shadow-xl border border-[#005c]/20 mt-4">
         <table className="w-full text-left border-collapse">
           <thead>
@@ -255,7 +276,6 @@ export default function AdminAllSurveys() {
           </tbody>
         </table>
 
-        {/* Desktop Pagination */}
         <div className="flex justify-between items-center p-4">
           <button
             onClick={prevPage}

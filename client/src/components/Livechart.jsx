@@ -16,7 +16,7 @@ export default function LiveChart() {
   useEffect(() => {
     let canceled = false;
 
-    fetch("http://localhost:3000/api/user/results")
+    fetch("https://bluepulse-mern.onrender.com/api/user/results")
       .then((r) => r.json())
       .then((data) => {
         if (canceled) return;

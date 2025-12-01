@@ -12,7 +12,7 @@ export default function AdminSingleSurvey() {
     const fetchSurvey = async () => {
       try {
         const res = await fetch(
-          `http://localhost:3000/api/admin/survey/${surveyId}`,
+          `https://bluepulse-mern.onrender.com/api/admin/survey/${surveyId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -43,30 +43,36 @@ export default function AdminSingleSurvey() {
     !autoChecks.dissolvedOxygenValid;
 
   const verify = async () => {
-    await fetch(`http://localhost:3000/api/admin/survey/${surveyId}/verify`, {
-      method: "PATCH",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ comments: "Verified by Admin" }),
-    });
+    await fetch(
+      `https://bluepulse-mern.onrender.com/api/admin/survey/${surveyId}/verify`,
+      {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ comments: "Verified by Admin" }),
+      }
+    );
     alert("Survey Verified Successfully!");
     navigate("/admin/surveys");
   };
 
   const flag = async () => {
-    await fetch(`http://localhost:3000/api/admin/survey/${surveyId}/flag`, {
-      method: "PATCH",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        comments: "Flagged for resurvey",
-        reasons: ["Anomalies Detected"],
-      }),
-    });
+    await fetch(
+      `https://bluepulse-mern.onrender.com/api/admin/survey/${surveyId}/flag`,
+      {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          comments: "Flagged for resurvey",
+          reasons: ["Anomalies Detected"],
+        }),
+      }
+    );
     alert("Survey Flagged for Resurvey!");
     navigate("/admin/surveys");
   };

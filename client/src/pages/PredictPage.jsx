@@ -97,7 +97,9 @@ export default function PredictPage() {
 
         // Get history first
         const historyRes = await fetch(
-          `http://localhost:3000/api/user/results/${encodeURIComponent(name)}`
+          `https://bluepulse-mern.onrender.com/api/user/results/${encodeURIComponent(
+            name
+          )}`
         );
         const historyData = await historyRes.json();
 
@@ -124,7 +126,7 @@ export default function PredictPage() {
 
         // Predict call
         const predictRes = await fetch(
-          "http://localhost:3000/api/ai/predict-water-quality",
+          "https://bluepulse-mern.onrender.com/api/ai/predict-water-quality",
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },

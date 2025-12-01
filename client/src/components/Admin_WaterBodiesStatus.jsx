@@ -30,7 +30,7 @@ export default function WaterBodiesStatus() {
       setGlobalError(null);
       try {
         const res = await fetch(
-          "http://localhost:3000/api/admin/water-bodies/status",
+          "https://bluepulse-mern.onrender.com/api/admin/water-bodies/status",
           {
             method: "GET",
             headers: {

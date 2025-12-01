@@ -10,7 +10,9 @@ export default function HomeContent() {
   useEffect(() => {
     const fetchSurveys = async () => {
       try {
-        const res = await fetch("http://localhost:3000/api/user/total-surveys");
+        const res = await fetch(
+          "https://bluepulse-mern.onrender.com/api/user/total-surveys"
+        );
         const data = await res.json();
         setSurveys(data.count);
       } catch (error) {
@@ -21,7 +23,7 @@ export default function HomeContent() {
     const fetchSurveyors = async () => {
       try {
         const res = await fetch(
-          "http://localhost:3000/api/user/total-surveyors"
+          "https://bluepulse-mern.onrender.com/api/user/total-surveyors"
         );
         const data = await res.json();
         setSurveyors(data.count);

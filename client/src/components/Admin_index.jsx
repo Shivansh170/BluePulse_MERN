@@ -23,9 +23,12 @@ export default function AdminHero({ name }) {
   const fetchSurveys = async () => {
     try {
       setLoading(true);
-      const res = await fetch("http://localhost:3000/api/admin/surveys", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await fetch(
+        "https://bluepulse-mern.onrender.com/api/admin/surveys",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       const data = await res.json();
       if (!data.success) throw new Error(data.message);
       setSurveys(data.surveys);

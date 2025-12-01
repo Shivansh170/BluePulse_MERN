@@ -20,7 +20,7 @@ export default function SurveyorSingle() {
 
   const fetchSurvey = async () => {
     const res = await fetch(
-      `http://localhost:3000/api/surveys/my/${surveyId}`,
+      `https://bluepulse-mern.onrender.com/api/surveys/my/${surveyId}`,
       {
         headers: { Authorization: `Bearer ${token}` },
       }

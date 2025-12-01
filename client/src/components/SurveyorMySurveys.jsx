@@ -16,7 +16,7 @@ export default function SurveyorMySurveys() {
   const fetchMySurveys = async () => {
     try {
       const res = await fetch(
-        "http://localhost:3000/api/surveys/getMysurveys",
+        "https://bluepulse-mern.onrender.com/api/surveys/getMysurveys",
         {
           headers: { Authorization: `Bearer ${token}` },
         }

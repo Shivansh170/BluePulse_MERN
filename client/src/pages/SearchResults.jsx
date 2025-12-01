@@ -107,7 +107,9 @@ export default function SearchResults() {
         setError("");
 
         // Fetch all water bodies
-        const listRes = await fetch("http://localhost:3000/api/user/results");
+        const listRes = await fetch(
+          "https://bluepulse-mern.onrender.com/api/user/results"
+        );
         const listData = await listRes.json();
         const allWaterBodies = listData.waterBodies || [];
 
@@ -131,7 +133,7 @@ export default function SearchResults() {
 
         // Fetch detailed data
         const detailRes = await fetch(
-          `http://localhost:3000/api/user/results/${encodeURIComponent(
+          `https://bluepulse-mern.onrender.com/api/user/results/${encodeURIComponent(
             matched.name
           )}`
         );

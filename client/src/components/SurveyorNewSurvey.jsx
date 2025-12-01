@@ -39,31 +39,34 @@ export default function SurveyorNewSurvey() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const res = await fetch("http://localhost:3000/api/surveys/createSurvey", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        location: {
-          name: location,
-          latitude: lat || 0,
-          longitude: lng || 0,
+    const res = await fetch(
+      "https://bluepulse-mern.onrender.com/api/surveys/createSurvey",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-        measurements: {
-          ph: Number(measurements.ph),
-          turbidity: Number(measurements.turbidity),
-          temperature: Number(measurements.temperature),
-          dissolvedOxygen: Number(measurements.dissolvedOxygen),
-        },
-        surveyorTime: new Date(),
-        photoProof: {
-          url: photoProof,
-          publicId: "",
-        },
-      }),
-    });
+        body: JSON.stringify({
+          location: {
+            name: location,
+            latitude: lat || 0,
+            longitude: lng || 0,
+          },
+          measurements: {
+            ph: Number(measurements.ph),
+            turbidity: Number(measurements.turbidity),
+            temperature: Number(measurements.temperature),
+            dissolvedOxygen: Number(measurements.dissolvedOxygen),
+          },
+          surveyorTime: new Date(),
+          photoProof: {
+            url: photoProof,
+            publicId: "",
+          },
+        }),
+      }
+    );
 
     const data = await res.json();
     if (data.success) alert("Survey Created Successfully!");

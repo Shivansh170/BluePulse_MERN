@@ -75,7 +75,7 @@ export default function AdminPredictPage() {
 
     try {
       const res = await fetch(
-        "http://localhost:3000/api/ai/predict-water-quality",
+        "https://bluepulse-mern.onrender.com/api/ai/predict-water-quality",
         {
           method: "POST",
           headers: {

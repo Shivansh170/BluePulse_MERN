@@ -8,9 +8,12 @@ export default function SurveyorHome() {
   const [surveys, setSurveys] = useState([]);
 
   const fetchMySurveys = async () => {
-    const res = await fetch("http://localhost:3000/api/surveys/getMysurveys", {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const res = await fetch(
+      "https://bluepulse-mern.onrender.com/api/surveys/getMysurveys",
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
 
     const data = await res.json();
     if (data.success) {

@@ -23,7 +23,7 @@ export default function ManageSurveyors() {
         const token = sessionStorage.getItem("accessToken");
 
         const res = await fetch(
-          "http://localhost:3000/api/admin/fetch-all-surveyors",
+          "https://bluepulse-mern.onrender.com/api/admin/fetch-all-surveyors",
           {
             method: "GET",
             headers: { Authorization: `Bearer ${token}` },
@@ -45,7 +45,7 @@ export default function ManageSurveyors() {
       const token = sessionStorage.getItem("accessToken");
 
       const res = await fetch(
-        `http://localhost:3000/api/admin/surveyor/${id}`,
+        `https://bluepulse-mern.onrender.com/api/admin/surveyor/${id}`,
         {
           method: "DELETE",
           headers: { Authorization: `Bearer ${token}` },
@@ -68,24 +68,27 @@ export default function ManageSurveyors() {
       const token = sessionStorage.getItem("accessToken");
       const user = JSON.parse(sessionStorage.getItem("user"));
 
-      if (user.role !== "Admin") {
+      if (user.role !== "admin") {
         alert("Only admins can create surveyors");
         return;
       }
 
-      const res = await fetch("http://localhost:3000/api/admin/createUser", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          name: newName,
-          email: newEmail,
-          password: newPassword,
-          role: "Surveyor",
-        }),
-      });
+      const res = await fetch(
+        "https://bluepulse-mern.onrender.com/api/admin/createUser",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            name: newName,
+            email: newEmail,
+            password: newPassword,
+            role: "Surveyor",
+          }),
+        }
+      );
 
       const data = await res.json();
 

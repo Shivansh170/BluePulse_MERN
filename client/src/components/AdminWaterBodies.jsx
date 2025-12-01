@@ -12,9 +12,12 @@ export default function AdminWaterBodies() {
 
   const fetchWaterBodies = async () => {
     try {
-      const res = await fetch("http://localhost:3000/api/admin/surveys", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await fetch(
+        "https://bluepulse-mern.onrender.com/api/admin/surveys",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       const data = await res.json();
       if (!data.success) throw new Error("Failed to load surveys");

@@ -11,25 +11,28 @@ export default function Login() {
     e.preventDefault();
 
     try {
-      const res = await fetch("http://localhost:3000/api/user/loginUser", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
+      const res = await fetch(
+        "https://bluepulse-mern.onrender.com/api/user/loginUser",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        }
+      );
 
       const data = await res.json();
       console.log(data);
 
       if (!res.ok) {
         alert(data.message || "Login failed");
-        return; // ⛔ stop here
+        return;
       }
       sessionStorage.setItem("accessToken", data.token);
       sessionStorage.setItem(
         "user",
         JSON.stringify({
           ...data.user,
-          role: data.user.role.toLowerCase(), // 🔥 FIX HERE
+          role: data.user.role.toLowerCase(),
         })
       );
 
