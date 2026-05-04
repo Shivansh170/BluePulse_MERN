@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Loader from "./Loader";
 
 export default function AdminAllSurveys() {
   const navigate = useNavigate();
@@ -51,7 +52,7 @@ export default function AdminAllSurveys() {
   if (loading) {
     return (
       <div className="w-full h-[60vh] flex justify-center items-center">
-        <div className="w-14 h-14 border-4 border-[#24C6DC] border-t-transparent rounded-full animate-spin"></div>
+        <Loader message="Loading all surveys..." />
       </div>
     );
   }

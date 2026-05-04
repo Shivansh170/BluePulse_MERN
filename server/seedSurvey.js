@@ -1,6 +1,8 @@
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 const WaterQualitySurvey = require("./models/WaterQualitySurveys");
+const User = require("./models/User");
+const bcrypt = require("bcryptjs");
 dotenv.config();
 
 // SURVEYORS
@@ -261,6 +263,47 @@ async function seed() {
   try {
     console.log("Connecting to MongoDB...");
     await mongoose.connect(process.env.MONGO_DB_URI);
+
+    console.log("Clearing existing users...");
+    await User.deleteMany({});
+
+    console.log("Seeding users...");
+    const hashedSurveyor1 = await bcrypt.hash("raju879", 10);
+    const hashedSurveyor2 = await bcrypt.hash("vikram432", 10);
+    const hashedSurveyor3 = await bcrypt.hash("sita112", 10);
+    const hashedAdmin = await bcrypt.hash("Shivansh123", 10);
+
+    const usersToInsert = [
+      {
+        _id: "692d7c6639248a00dc45df47",
+        name: "Raju",
+        email: "raju879@bluepulse.ac.in",
+        password: hashedSurveyor1,
+        role: "Surveyor",
+      },
+      {
+        _id: "692d7c9039248a00dc45df4c",
+        name: "Vikram",
+        email: "vikram432@bluepulse.ac.in",
+        password: hashedSurveyor2,
+        role: "Surveyor",
+      },
+      {
+        _id: "692d7db539248a00dc45df53",
+        name: "Sita",
+        email: "sita112@bluepulse.ac.in",
+        password: hashedSurveyor3,
+        role: "Surveyor",
+      },
+      {
+        name: "Shivansh",
+        email: "shivanshlavaniya456@gmail.com",
+        password: hashedAdmin,
+        role: "Admin",
+      },
+    ];
+
+    await User.insertMany(usersToInsert);
 
     console.log("Clearing existing surveys...");
     await WaterQualitySurvey.deleteMany({});

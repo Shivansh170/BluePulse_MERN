@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Loader from "./Loader";
 
 export default function AdminWaterBodies() {
   const [loading, setLoading] = useState(true);
@@ -72,11 +73,8 @@ export default function AdminWaterBodies() {
 
   if (loading)
     return (
-      <div className="flex justify-center py-12">
-        <div
-          className="w-12 h-12 border-4 border-gray-200 rounded-full animate-spin"
-          style={{ borderTopColor: "#4A37FF" }}
-        ></div>
+      <div className="py-12">
+        <Loader message="Loading water bodies..." />
       </div>
     );
 

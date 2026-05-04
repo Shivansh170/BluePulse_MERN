@@ -11,6 +11,7 @@ import {
 } from "recharts";
 import AdminWaterBodies from "./AdminWaterBodies";
 import { ChevronRight, ChevronLeft } from "lucide-react";
+import Loader from "./Loader";
 
 export default function AdminHero({ name }) {
   const [loading, setLoading] = useState(true);
@@ -84,11 +85,8 @@ export default function AdminHero({ name }) {
 
   if (loading)
     return (
-      <div className="flex items-center justify-center p-6 h-screen">
-        <div role="status" className="flex flex-col items-center gap-3">
-          <div className="w-12 h-12 border-4 border-gray-200 rounded-full animate-spin border-t-[#005c]" />
-          <span className="sr-only">Loading...</span>
-        </div>
+      <div className="flex items-center justify-center p-6 h-[60vh]">
+        <Loader message="Loading admin overview..." />
       </div>
     );
 

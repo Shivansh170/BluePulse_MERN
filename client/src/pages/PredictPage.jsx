@@ -7,6 +7,7 @@ import {
   AlertTriangle,
   TrendingUp,
 } from "lucide-react";
+import Loader from "../components/Loader";
 
 // Circle Gauge Component
 function CircleGauge({ value, max, label, icon: Icon, color }) {
@@ -159,9 +160,7 @@ export default function PredictPage() {
         </h1>
 
         {loading && (
-          <p className="text-center text-white/70 animate-pulse text-lg">
-            Predicting…
-          </p>
+          <Loader message="Predicting water quality..." />
         )}
 
         {!loading && error && (

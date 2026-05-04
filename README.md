@@ -37,6 +37,18 @@ Email: raju879@bluepulse.ac.in
 Password: raju879
 
 
+Additional Surveyors
+
+Email: vikram432@bluepulse.ac.in
+
+Password: vikram432
+
+
+Email: sita112@bluepulse.ac.in
+
+Password: sita112
+
+
 > ⚠️ These credentials are provided only for demo purposes.
 
 

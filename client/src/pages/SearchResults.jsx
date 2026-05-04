@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Droplets, Thermometer, Gauge, MapPin, ArrowRight } from "lucide-react";
+import Loader from "../components/Loader";
 
 // SMART NORMALIZE: remove stopwords, normalize words, and sort them
 function normalize(str) {
@@ -174,9 +175,7 @@ export default function SearchResults() {
         </h1>
 
         {loading && (
-          <p className="text-center text-white/70 animate-pulse py-10">
-            Loading results…
-          </p>
+          <Loader message="Loading search results..." />
         )}
 
         {!loading && error && (
